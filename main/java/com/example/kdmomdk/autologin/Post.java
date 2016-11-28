@@ -1,8 +1,11 @@
 package com.example.kdmomdk.autologin;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -13,29 +16,31 @@ import javax.net.ssl.SSLPeerUnverifiedException;
  * Created by kdmomdk on 2016/8/22.
  */
 public class Post {
-
     public Post(String http,String acc,String pas) {
+        HttpURLConnection post =null;
+        URL url = null;
+        String data = "DDDDD="+acc+"&upass="+pas+"&hid1=&hid2=&0MKKey=123456&R6=0";
         try{
-            HttpsURLConnection post = null;
-            URL url = new URL(http);
-            post = (HttpsURLConnection) url.openConnection();
-            post.setRequestMethod("POST");
-            post.setRequestProperty("User-Agent","Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; qdesk 2.4.1263.203; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727");
-            post.setRequestProperty("Accept-Language","zh-cn");
-            post.setUseCaches(false);
+            url = new URL(http);
+            post = (HttpURLConnection) url.openConnection();
+
             post.setDoOutput(true);    // 可以发送数据
-            post.setDoInput(true);
-            post.setRequestProperty("Connection", "Keep-Alive");
+
+            post.setUseCaches(false);
+            post.setInstanceFollowRedirects(true);
+
+            post.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            post.setRequestProperty("Charset", "utf-8");
+
             post.setConnectTimeout(15000);
             post.setReadTimeout(20000);
-            post.setAllowUserInteraction(false);
-            post.connect();
-            OutputStreamWriter output = new OutputStreamWriter(post.getOutputStream(), "UTF-8");
-            output.write("OMKKey=123456&DDDDD="+acc+"&hid1=&hid2=&R6=0&upass="+pas);
+
+            DataOutputStream output = new DataOutputStream(post.getOutputStream());
+            output.writeBytes(data);
             output.flush();
             output.close();
-            if(post.getResponseCode()!=-1){
-                //connect successfully
+            if(post.getResponseCode()==200){
+
             }
         }
         catch (Exception e){
